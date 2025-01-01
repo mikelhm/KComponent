@@ -1,0 +1,13 @@
+plugins {
+    id 'com.android.library'
+    alias(libs.plugins.compose.compiler)
+    id 'kotlin-android'
+    id 'com.google.devtools.ksp'
+    id 'kotlin-parcelize'
+}
+
+android {
+    namespace 'com.hammons.module_download'
+}
+
+apply from: "../demo_module.gradle"

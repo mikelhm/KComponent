@@ -4,13 +4,17 @@ import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.os.Build
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -20,17 +24,22 @@ import androidx.core.app.NotificationCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.xiaojinzi.component.base.spi.DownloadSpi
+import com.xiaojinzi.component.base.spi.DownloadStatus
 import com.xiaojinzi.component.base.RouterConfig
 import com.xiaojinzi.component.base.api.RouterApi
 import com.xiaojinzi.component.base.view.ActionButton
 import com.xiaojinzi.component.base.view.AppbarNormal
 import com.xiaojinzi.component.app1.module.main.domain.MainUseCase
+import com.xiaojinzi.component.base.spi.UserSpi
 import com.xiaojinzi.component.impl.Router
 import com.xiaojinzi.component.impl.application.ModuleManager
 import com.xiaojinzi.component.impl.routeApi
+import com.xiaojinzi.component.impl.service.service
 import com.xiaojinzi.support.ktx.nothing
 import com.xiaojinzi.support.ktx.toStringItemDto
 import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.launch
 
 @InternalCoroutinesApi
 @ExperimentalMaterialApi
@@ -41,6 +50,7 @@ import kotlinx.coroutines.InternalCoroutinesApi
 private fun MainView() {
     val context = LocalContext.current
     val vm: MainViewModel = viewModel()
+    val coroutineScope = rememberCoroutineScope()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -101,6 +111,27 @@ private fun MainView() {
             }
 
         }
+            Button(
+                onClick = {
+
+                    coroutineScope.launch {
+                        Log.d("lhmtesting", "Download" + DownloadSpi::class.service())
+                        val flow = DownloadSpi::class.service()!!.startDownload("")
+                        flow.collect { status ->
+                            when (status) {
+                                is DownloadStatus.DownloadProgress -> Log.d("lhmtesting", "Download progress: ${status.progress}")
+                                is DownloadStatus.DownloadSuccess -> Log.d("lhmtesting","Download completed successfully")
+                                is DownloadStatus.DownloadFailure -> Log.d("lhmtesting","Download failed: ${status.exception}")
+                            }
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .padding(8.dp)
+            ) {
+                Text(text = "测试 下载组件")
+            }
+
 
         ActionButton(
             modifier = Modifier

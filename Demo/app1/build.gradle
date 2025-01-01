@@ -69,6 +69,8 @@ dependencies {
     api project(':Demo:module-support')
     api project(':Demo:module-user')
     api project(':Demo:module-base')
+
+    api project(':Demo:module_download')
 }
 
 
